@@ -2,10 +2,9 @@
 
 # 🎓 EdTech Analytics Dashboard: Central de Performance & Sucesso do Aluno
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![Pandas](https://img.shields.io/badge/Pandas-2.0%2B-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
-[![Plotly](https://img.shields.io/badge/Plotly-5.15%2B-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)](https://plotly.com/)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-2.0%2B-150458?style=for-the-badge&logo=pandas&logoColor=white)
 
 Uma solução completa de **Business Intelligence & Data Analytics para EdTechs**, desenvolvida para monitorar o desempenho de alunos do ensino médio/pré-vestibular, estratégias de aprovação universitária, fatores de risco socioemocionais e planos de intervenção pedagógica.
 
@@ -76,6 +75,9 @@ Para garantir a estabilidade, precisão dos cálculos acadêmicos e fluidez da a
 - **Validação de Cálculos e Regras de Negócio:** Testes de consistência na geração dinâmica de métricas — como cálculo de margem em relação à nota de corte (diferencial de pontos), classificação automática do status dos planos (*Atingimento*, *Dentro da Nota*, *Reconsiderar*) e evolução percentual no ENEM.
 
 - **Tratamento de Exceções e Resiliência (Fallback Data):** Implementação de estratégias de manipulação de erros com para assegurar o carregamento gracioso da dashboard caso o arquivo de dados apresente valores nulos ou formatação inconsistente.
+
+- **Testes de Layout e Responsividade:** Validação de componentes visuais, contraste em badges de status, integridade das fontes customizadas e adaptação do layout em colunas para múltiplos tamanhos de tela.
+
 
 ---
 
