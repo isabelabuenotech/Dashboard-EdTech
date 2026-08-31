@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 from datetime import datetime, timedelta
 
 # ==========================================
@@ -44,11 +43,11 @@ def load_mock_data():
         psiquiatra = np.random.choice(["Sim", "Não"], p=[0.2, 0.8])
         situacao_psi = np.random.choice(situacoes_psi)
         
-        # Simulando histórico de 4 bimestres/simulados por aluno
+        # Histórico de 4 bimestres/simulados por aluno
         for b in range(1, 5):
             data_registro = base_date + timedelta(days=b * 40)
-            media_acad = round(np.random.uniform(5.5, 9.8), 1)
-            nota_simulado = round(np.random.uniform(500, 920), 0)
+            media_acad = round(float(np.random.uniform(5.5, 9.8)), 1)
+            nota_simulado = round(float(np.random.uniform(500, 920)), 0)
             
             data_list.append({
                 "id_aluno": i + 1,
@@ -62,8 +61,8 @@ def load_mock_data():
                 "situacao_psicologica": situacao_psi,
                 "faz_psicoterapia": psicoterapia,
                 "acompanhamento_psiquiatra": psiquiatra,
-                "registro_intervencoes": f"Atendimento realizado no {b}º bimestre. Foco em gestão de tempo e apoio emocional.",
-                "planejamento_pedagógico": f"Plano de estudos ajustado para foco nas matérias com desempenho < 7.0.",
+                "registro_intervencoes": f"Atendimento no {b}º bimestre. Foco em gestão de tempo e apoio emocional.",
+                "planejamento_pedagógico": f"Plano ajustado para foco nas matérias com desempenho < 7.0.",
                 "interesse_profissional": interesses_prof[i % len(interesses_prof)],
                 "faculdade_interesse": faculdades[i % len(faculdades)],
                 "responsavel_nome": f"Responsável de {nome.split()[0]}",
@@ -79,22 +78,17 @@ df_raw = load_mock_data()
 # ==========================================
 # 3. BARRA LATERAL E FILTROS GLOBAIS
 # ==========================================
-st.sidebar.image("https://cdn-icons-png.flaticon.com/512/3429/3429149.png", width=80)
 st.sidebar.title("Filtros do Painel")
 
-# Filtro por Escola
 escolas_disponiveis = sorted(df_raw["escola"].unique().tolist())
 escolas_selecionadas = st.sidebar.multiselect("Filtrar por Colégio:", escolas_disponiveis, default=escolas_disponiveis)
 
-# Filtro por Série
 series_disponiveis = sorted(df_raw["serie"].unique().tolist())
 series_selecionadas = st.sidebar.multiselect("Filtrar por Série:", series_disponiveis, default=series_disponiveis)
 
-# Filtro por Aluno Especifico (Opcional)
 alunos_disponiveis = sorted(df_raw["nome"].unique().tolist())
 alunos_selecionados = st.sidebar.multiselect("Buscar Aluno(s) Específico(s):", alunos_disponiveis, default=[])
 
-# Filtro por Período de Data
 min_date = df_raw["data_registro"].min().date()
 max_date = df_raw["data_registro"].max().date()
 data_inicio, data_fim = st.sidebar.date_input(
@@ -104,7 +98,7 @@ data_inicio, data_fim = st.sidebar.date_input(
     max_value=max_date
 )
 
-# Application dos Filtros
+# Aplicação dos Filtros
 df_filtered = df_raw.copy()
 
 if escolas_selecionadas:
@@ -124,18 +118,16 @@ df_filtered = df_filtered[
 # ==========================================
 # 4. PAINEL PRINCIPAL & KPIS
 # ==========================================
-st.title("🎓 Dashboard de Acompanhamento Pedagógico e De Saúde Mental")
-st.markdown("Visão consolidada para Orientadores Educacionais.")
+st.title("🎓 Dashboard de Acompanhamento Pedagógico & Saúde Mental")
+st.caption("Visão consolidada para Orientadores Educacionais")
 
 if df_filtered.empty:
-    st.warning("Nenhum dado encontrado para os filtros selecionados. Por favor, ajuste as opções na barra lateral.")
+    st.warning("Nenhum dado encontrado para os filtros selecionados. Ajuste as opções na barra lateral.")
 else:
-    # Cálculo das métricas principais (KPIs)
     total_alunos = df_filtered["nome"].nunique()
     media_geral_notas = df_filtered["media_academica"].mean()
     media_simulados = df_filtered["resultado_simulado"].mean()
     
-    # Subconjunto com o registro mais recente por aluno para contagens únicas
     df_ultimos_registros = df_filtered.sort_values("data_registro").groupby("nome").last().reset_index()
     em_psicoterapia = df_ultimos_registros[df_ultimos_registros["faz_psicoterapia"] == "Sim"].shape[0]
     
@@ -143,82 +135,50 @@ else:
     col1.metric("Total de Alunos", total_alunos)
     col2.metric("Média Acadêmica Geral", f"{media_geral_notas:.2f}", delta=f"{media_geral_notas - 7.0:.2f} vs Meta (7.0)")
     col3.metric("Média nos Simulados", f"{media_simulados:.0f} pts", delta=f"{media_simulados - 600:.0f} vs Meta (600)")
-    col4.metric("Em Psicoterapia", f"{em_psicoterapia} alunos", delta=f"{(em_psicoterapia/total_alunos)*100:.1f}% do total", delta_color="off")
+    col4.metric("Em Psicoterapia", f"{em_psicoterapia} alunos", delta=f"{(em_psicoterapia/max(total_alunos, 1))*100:.1f}% do total", delta_color="off")
 
     st.markdown("---")
 
     # ==========================================
-    # 5. GRÁFICOS INTERATIVOS
+    # 5. VISUALIZAÇÕES NATIVAS (SEM PLOTLY)
     # ==========================================
     c1, c2 = st.columns(2)
 
     with c1:
-        st.subheader("📈 Evolução Média Acadêmica ao Longo do Tempo")
-        df_evolucao = df_filtered.groupby(["data_registro", "serie"])["media_academica"].mean().reset_index()
-        fig_linha = px.line(
-            df_evolucao, 
-            x="data_registro", 
-            y="media_academica", 
-            color="serie",
-            markers=True,
-            labels={"data_registro": "Data de Avaliação", "media_academica": "Média Acadêmica", "serie": "Série"},
-            title="Média por Série ao Longo dos Registros"
+        st.subheader("📈 Evolução Média Acadêmica por Série")
+        # Pivotar dados para o st.line_chart nativo
+        df_evolucao = df_filtered.pivot_table(
+            index="data_registro", 
+            columns="serie", 
+            values="media_academica", 
+            aggfunc="mean"
         )
-        fig_linha.update_layout(yaxis_range=[0, 10])
-        st.plotly_chart(fig_linha, use_container_width=True)
+        st.line_chart(df_evolucao)
 
     with c2:
         st.subheader("🧠 Condição / Queixa de Saúde Mental")
-        df_saude = df_ultimos_registros["situacao_psicologica"].value_counts().reset_index()
-        df_saude.columns = ["Queixa / Situação", "Quantidade"]
-        fig_barras = px.bar(
-            df_saude,
-            x="Quantidade",
-            y="Queixa / Situação",
-            orientation="h",
-            color="Quantidade",
-            color_continuous_scale="Reds",
-            title="Distribuição das Condições Psicológicas Identificadas"
-        )
-        st.plotly_chart(fig_barras, use_container_width=True)
+        df_saude = df_ultimos_registros["situacao_psicologica"].value_counts().to_frame("Quantidade")
+        st.bar_chart(df_saude)
 
     c3, c4 = st.columns(2)
 
     with c3:
         st.subheader("🎯 Cursos de Interesse Profissional")
-        df_cursos = df_ultimos_registros["interesse_profissional"].value_counts().reset_index()
-        df_cursos.columns = ["Curso", "Quantidade"]
-        fig_donut_cursos = px.pie(
-            df_cursos, 
-            names="Curso", 
-            values="Quantidade", 
-            hole=0.4,
-            title="Distribuição de Interesse por Carreira"
-        )
-        st.plotly_chart(fig_donut_cursos, use_container_width=True)
+        df_cursos = df_ultimos_registros["interesse_profissional"].value_counts().to_frame("Alunos")
+        st.bar_chart(df_cursos)
 
     with c4:
-        st.subheader("🏛️ Faculdades de Interesse (Estratégia Vestibular)")
-        df_facul = df_ultimos_registros["faculdade_interesse"].value_counts().reset_index()
-        df_facul.columns = ["Faculdade", "Quantidade"]
-        fig_donut_facul = px.pie(
-            df_facul, 
-            names="Faculdade", 
-            values="Quantidade", 
-            hole=0.4,
-            color_discrete_sequence=px.colors.qualitative.Pastel,
-            title="Instituições Alvo dos Estudantes"
-        )
-        st.plotly_chart(fig_donut_facul, use_container_width=True)
+        st.subheader("🏛️ Faculdades de Interesse")
+        df_facul = df_ultimos_registros["faculdade_interesse"].value_counts().to_frame("Alunos")
+        st.bar_chart(df_facul)
 
     st.markdown("---")
 
     # ==========================================
-    # 6. TABELA DETALHADA E INTERVENÇÕES
+    # 6. TABELA DETALHADA
     # ==========================================
-    st.subheader("📋 Detalhamento dos Alunos, Planejamento e Responsáveis")
+    st.subheader("📋 Detalhamento dos Alunos e Planejamento Pedagógico")
     
-    # Seleção das colunas para apresentação limpa
     cols_exibicao = [
         "nome", "escola", "serie", "media_academica", "resultado_simulado",
         "situacao_psicologica", "faz_psicoterapia", "acompanhamento_psiquiatra",
