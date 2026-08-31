@@ -59,7 +59,13 @@ Este projeto transforma dados educacionais multivariados em um **Produto de Dado
 * **Formatos de Dados:** Estruturas CSV e JSON para manipulação do estado da aplicação e estruturas de dados.
   
 ---
-## 💡 Como Navegar na Dashboard
+## 💡 Como Acessar a Dashboard
+O dashboard está publicado e acessível de forma online no ecossistema cloud do Streamlit. Para navegar na interface sem necessidade de instalação local:
+
+👉 [Acesse o Dashboard Online Aqui](https://edtech-dash.streamlit.app/)
+
+
+## Como Navegar na Dashboard
 
 - **Visão Geral:** Utilize os filtros na barra lateral para isolar unidades escolares específicas ou níveis de maturidade da turma. Identifique os alunos que demandam suporte prioritário através das métricas de intervenção.
 
@@ -84,7 +90,5 @@ Para garantir a estabilidade, precisão dos cálculos acadêmicos e fluidez da a
 > Psicóloga Escolar | Analista Educacional Sênior | Data & Tech Enabler (QA & Python)
 
 📧 **E-mail:** isabelabueno.tech@gmail.com
-
 💼 **LinkedIn:** isabela-bueno-silva
-
 🐱 **GitHub:** @isabelabuenotech
