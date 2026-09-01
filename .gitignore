@@ -1,0 +1,20 @@
+# Ambientes virtuais e cache
+__pycache__/
+*.py[cod]
+venv/
+.env
+.pytest_cache/
+
+# Bloqueio estrito de dados sensíveis reais (LGPD)
+data/raw/*
+!.gitkeep
+*.csv
+*.xlsx
+
+# Liberação da base sintética de demonstração
+!data/mock/*.csv
+
+# IDEs e sistema operacional
+.vscode/
+.idea/
+.DS_Store
